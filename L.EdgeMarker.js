@@ -4,12 +4,15 @@
 
     addTo: function (map) {
       this._map = map;
+
+      //add a method to get applicable features
       L.extend(map,{
-        _getMarkers: function() {
+        _getFeatures: function() {
           out = [];
           for(l in this._layers){
+                      console.log(this._layers[l]);
             //test if this is the markerpane, does this even work?
-            if(typeof this._layers[l].update !== 'undefined'){
+            if(typeof this._layers[l].getLatLng !== 'undefined'){
               out.push(this._layers[l]);
             }
           }
@@ -26,15 +29,13 @@
       return this;
     },
 
-    onAdd: function (map) {
-
-    },
+    onAdd: function (map) {},
 
     _addEdgeMarkers: function () {
        if(typeof _borderMarkerLayer === 'undefined') _borderMarkerLayer = new L.LayerGroup();
        _borderMarkerLayer.clearLayers();
 
-       var features = this._map._getMarkers();
+       var features = this._map._getFeatures();
        console.log(features.length);
 
        for(var i = 0; i < this._map.getPanes().markerPane.children.length; i++){
@@ -42,7 +43,7 @@
          var bounds = this._map.getContainer().getBoundingClientRect();
 
          if(markerPos.top < bounds.top || markerPos.bottom > bounds.bottom || markerPos.right > bounds.right || markerPos.left < bounds.left){
-           var markerPosInBounds = this._map.latLngToContainerPoint(this._map._getMarkers()[i].getLatLng());
+           var markerPosInBounds = this._map.latLngToContainerPoint(this._map._getFeatures()[i].getLatLng());
            if( markerPos.top < bounds.top ){ //oben raus
              var y = 0;
            } else if (markerPos.bottom > bounds.bottom) { //unten raus
