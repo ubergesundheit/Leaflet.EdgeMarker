@@ -3,7 +3,16 @@
 
   L.EdgeMarker = L.Class.extend({
 
-    _borderMarkerLayer: undefined,
+    options: {
+        radius: 12,
+        weight: 0,
+        fillColor: 'blue',
+        fillOpacity: 1
+             },
+
+    initialize: function(options) {
+      L.setOptions(this, options);
+    },
 
     addTo: function (map) {
       this._map = map;
@@ -33,6 +42,8 @@
 
     onAdd: function () {},
 
+    _borderMarkerLayer: undefined,
+
     _addEdgeMarkers: function () {
       if (typeof this._borderMarkerLayer === 'undefined') { 
         this._borderMarkerLayer = new L.LayerGroup(); 
@@ -52,20 +63,22 @@
             currentMarkerPosition.x < 0) {
 
           var y = currentMarkerPosition.y;
-          if( currentMarkerPosition.y < 0 ) { //oben raus
+          if( currentMarkerPosition.y < 0 ) {
             y = 0;
-          } else if (currentMarkerPosition.y > mapPixelBounds.y) { //unten raus
+          } else if (currentMarkerPosition.y > mapPixelBounds.y) {
             y = mapPixelBounds.y;   
           }
 
           var x = currentMarkerPosition.x;
-          if (currentMarkerPosition.x > mapPixelBounds.x) { // rechts raus
+          if (currentMarkerPosition.x > mapPixelBounds.x) {
             x = mapPixelBounds.x;
-          } else if ( currentMarkerPosition.x < 0) { // links raus
+          } else if ( currentMarkerPosition.x < 0) {
             x = 0;
           }
           
-          L.circleMarker(this._map.containerPointToLatLng([x,y]), {radius: 12,weight: 0,fillColor: 'blue',fillOpacity: 1}).addTo(this._borderMarkerLayer);
+
+          L.circleMarker(this._map.containerPointToLatLng([x,y]), this.options)
+              .addTo(this._borderMarkerLayer);
         }
       }
       if(!this._map.hasLayer(this._borderMarkerLayer)) {
