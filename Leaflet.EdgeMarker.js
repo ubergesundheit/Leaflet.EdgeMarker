@@ -7,7 +7,7 @@
               radius: 12,
               weight: 1,
               color: 'green',
-              fillColor: 'blue',
+              fillColor: 'yellow',
               fillOpacity: 1
              },
 
@@ -76,7 +76,6 @@
           } else if ( currentMarkerPosition.x < 0) {
             x = 0;
           }
-          
 
           L.circleMarker(this._map.containerPointToLatLng([x,y]), this.options)
               .addTo(this._borderMarkerLayer);
