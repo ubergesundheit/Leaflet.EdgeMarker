@@ -4,10 +4,11 @@
   L.EdgeMarker = L.Class.extend({
 
     options: {
-        radius: 12,
-        weight: 0,
-        fillColor: 'blue',
-        fillOpacity: 1
+              radius: 12,
+              weight: 1,
+              color: 'green',
+              fillColor: 'blue',
+              fillOpacity: 1
              },
 
     initialize: function(options) {
@@ -86,5 +87,9 @@
       }
     }
   });
+
+  L.edgeMarker = function (options) {
+    return new L.EdgeMarker(options);
+  };
 
 })(L);
