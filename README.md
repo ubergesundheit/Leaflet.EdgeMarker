@@ -15,4 +15,4 @@ Usage
   * Include the file after you included `leaflet.js` 
   * Initialize the EdgeMarkers with `L.EdgeMarker().addTo(map)` **after** you initialized your `map` and Markers/Circles/CircleMarkers
 
-**Or look at the source of `example.html`**
+**Or look at the source of the [demo](http://ubergesundheit.github.io/Leaflet.EdgeMarker)**
