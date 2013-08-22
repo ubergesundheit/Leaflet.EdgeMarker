@@ -13,6 +13,6 @@ Usage
 
   * Download the `Leaflet.EdgeMarker.js`
   * Include the file after you included `leaflet.js` 
-  * Initialize the EdgeMarkers with `L.EdgeMarker().addTo(map)` **after** you initialized your `map` and Markers/Circles/CircleMarkers
+  * Initialize the EdgeMarkers with `L.edgeMarker().addTo(map)` **after** you initialized your `map` and Markers/Circles/CircleMarkers
 
 **Or look at the source of `example.html`**
