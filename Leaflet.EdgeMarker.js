@@ -8,7 +8,9 @@
               weight: 1,
               color: 'green',
               fillColor: 'yellow',
-              fillOpacity: 1
+              fillOpacity: 1,
+              distanceOpacity: false,
+              distanceOpacityFactor: 4
              },
 
     initialize: function(options) {
@@ -66,18 +68,27 @@
           var y = currentMarkerPosition.y;
           if( currentMarkerPosition.y < 0 ) {
             y = 0;
+            var markerDistance = -currentMarkerPosition.y;
           } else if (currentMarkerPosition.y > mapPixelBounds.y) {
             y = mapPixelBounds.y;   
+            var markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
           }
 
           var x = currentMarkerPosition.x;
           if (currentMarkerPosition.x > mapPixelBounds.x) {
             x = mapPixelBounds.x;
+            var markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
           } else if ( currentMarkerPosition.x < 0) {
             x = 0;
+            var markerDistance = -currentMarkerPosition.x;
           }
 
-          L.circleMarker(this._map.containerPointToLatLng([x,y]), this.options)
+          var newOptions = this.options;
+          if(this.options.distanceOpacity){
+            newOptions.fillOpacity = (100 - (markerDistance/this.options.distanceOpacityFactor))/100;
+          }
+
+          L.circleMarker(this._map.containerPointToLatLng([x,y]), newOptions)
               .addTo(this._borderMarkerLayer);
         }
       }
