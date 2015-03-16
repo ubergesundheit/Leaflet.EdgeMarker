@@ -17,6 +17,7 @@
       L.setOptions(this, options);
     },
 
+    
     addTo: function (map) {
       this._map = map;
 
@@ -46,7 +47,10 @@
     onAdd: function () {},
 
     _borderMarkerLayer: undefined,
-
+    onClick : function (e){
+      
+    this._map.setView(e.target.options.latlng,this._map.getZoom());
+    },
     _addEdgeMarkers: function () {
       if (typeof this._borderMarkerLayer === 'undefined') { 
         this._borderMarkerLayer = new L.LayerGroup(); 
@@ -87,9 +91,14 @@
           if(this.options.distanceOpacity){
             newOptions.fillOpacity = (100 - (markerDistance/this.options.distanceOpacityFactor))/100;
           }
-
-          L.circleMarker(this._map.containerPointToLatLng([x,y]), newOptions)
+		  		var ref = {
+				latlng : features[i].getLatLng()
+				};
+		  var settings = L.extend({},newOptions,ref);
+          var icircle = L.circleMarker(this._map.containerPointToLatLng([x,y]),settings)
               .addTo(this._borderMarkerLayer);
+	      icircle.on('click',this.onClick,icircle);
+			console.log(icircle.options);
         }
       }
       if(!this._map.hasLayer(this._borderMarkerLayer)) {
