@@ -47,6 +47,7 @@
     onAdd: function () {},
 
     _borderMarkerLayer: undefined,
+    
     onClick : function (e){
       this._map.setView(e.target.options.latlng,this._map.getZoom());
     },
