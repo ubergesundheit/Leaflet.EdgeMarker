@@ -48,9 +48,9 @@
 
     _borderMarkerLayer: undefined,
     onClick : function (e){
-      
-    this._map.setView(e.target.options.latlng,this._map.getZoom());
+      this._map.setView(e.target.options.latlng,this._map.getZoom());
     },
+    
     _addEdgeMarkers: function () {
       if (typeof this._borderMarkerLayer === 'undefined') { 
         this._borderMarkerLayer = new L.LayerGroup(); 
@@ -91,14 +91,11 @@
           if(this.options.distanceOpacity){
             newOptions.fillOpacity = (100 - (markerDistance/this.options.distanceOpacityFactor))/100;
           }
-		  		var ref = {
-				latlng : features[i].getLatLng()
-				};
-		  var settings = L.extend({},newOptions,ref);
+	  var ref = { latlng : features[i].getLatLng() };
+	  var settings = L.extend({},newOptions,ref);
           var icircle = L.circleMarker(this._map.containerPointToLatLng([x,y]),settings)
               .addTo(this._borderMarkerLayer);
-	      icircle.on('click',this.onClick,icircle);
-			console.log(icircle.options);
+          icircle.on('click',this.onClick,icircle);
         }
       }
       if(!this._map.hasLayer(this._borderMarkerLayer)) {
