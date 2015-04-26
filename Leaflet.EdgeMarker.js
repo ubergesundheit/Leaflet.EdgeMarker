@@ -45,6 +45,10 @@
 
       return this;
     },
+    
+    onClick : function (e){
+      this._map.setView(e.target.options.latlng,this._map.getZoom());
+    },
 
     onAdd: function () {},
 
@@ -121,9 +125,13 @@
             newOptions.angle = angle;
           }
           
-
-          L.rotatedMarker(this._map.containerPointToLatLng([x,y]), newOptions)
+          var ref = { latlng : features[i].getLatLng() };
+          var newOptions = L.extend({},newOptions,ref);
+          
+          var marker = L.rotatedMarker(this._map.containerPointToLatLng([x,y]), newOptions)
               .addTo(this._borderMarkerLayer);
+          
+          marker.on('click',this.onClick,marker);
         }
       }
       if(!this._map.hasLayer(this._borderMarkerLayer)) {
