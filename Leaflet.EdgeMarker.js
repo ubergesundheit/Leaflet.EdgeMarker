@@ -4,17 +4,17 @@
   L.EdgeMarker = L.Class.extend({
 
     options: {
-              distanceOpacity: false,
-              distanceOpacityFactor: 4,
-              layerGroup: null,
-              rotateIcons: true,
-              icon : L.icon({
+      distanceOpacity: false,
+      distanceOpacityFactor: 4,
+      layerGroup: null,
+      rotateIcons: true,
+      icon : L.icon({
           iconUrl : L.Icon.Default.imagePath+'/edge-arrow-marker.png',
           clickable: true,
           iconSize: [48,48],
           iconAnchor: [24, 24]
         })
-             },
+    },
 
     initialize: function(options) {
       L.setOptions(this, options);
