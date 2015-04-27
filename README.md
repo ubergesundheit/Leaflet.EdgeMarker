@@ -13,7 +13,7 @@ Usage
 
   * Download the `Leaflet.EdgeMarker.js`
   * Include the file after you included `leaflet.js` 
-  * copy `images/edge-arrow-marker.png` to the leaflet image directory
+  * copy `images/edge-arrow-marker.png` to the leaflet image directory or specify your own marker icon (see demo).
   * Initialize the EdgeMarkers with `L.edgeMarker().addTo(map)` **after** you initialized your `map` and Markers/Circles/CircleMarkers
 
 **Or look at the source of `example.html`**
