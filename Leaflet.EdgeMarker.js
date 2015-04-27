@@ -13,7 +13,7 @@
           clickable: true,
           iconSize: [48,48],
           iconAnchor: [24, 24]
-        })
+      })
     },
 
     initialize: function(options) {
@@ -81,14 +81,9 @@
             currentMarkerPosition.x > mapPixelBounds.x || 
             currentMarkerPosition.x < 0) {
           
-          
           // get pos of marker
           var x = currentMarkerPosition.x;
           var y = currentMarkerPosition.y;
-          
-            
-          var mapPixelBounds = this._map.getSize();
-          
           
           // bottom out
           if( currentMarkerPosition.y < 0 ) {
@@ -100,7 +95,6 @@
             var markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
           }
 
-          
           // right out
           if (currentMarkerPosition.x > mapPixelBounds.x) {
             x = mapPixelBounds.x - markerWidth/2;
