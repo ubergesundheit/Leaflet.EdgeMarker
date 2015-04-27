@@ -85,25 +85,26 @@
           // get pos of marker
           var x = currentMarkerPosition.x;
           var y = currentMarkerPosition.y;
+          var markerDistance;
 
           // bottom out
           if (currentMarkerPosition.y < 0) {
             y = 0 + markerHeight / 2;
-            var markerDistance = -currentMarkerPosition.y;
+            markerDistance = -currentMarkerPosition.y;
           // top out
           } else if (currentMarkerPosition.y > mapPixelBounds.y) {
             y = mapPixelBounds.y - markerHeight / 2;
-            var markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
+            markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
           }
 
           // right out
           if (currentMarkerPosition.x > mapPixelBounds.x) {
             x = mapPixelBounds.x - markerWidth / 2;
-            var markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
+            markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
           // left out
           } else if (currentMarkerPosition.x < 0) {
             x = 0 + markerWidth / 2;
-            var markerDistance = -currentMarkerPosition.x;
+            markerDistance = -currentMarkerPosition.x;
           }
 
           // change opacity on distance
@@ -121,7 +122,7 @@
           }
 
           var ref = {latlng: features[i].getLatLng()};
-          var newOptions = L.extend({}, newOptions, ref);
+          newOptions = L.extend({}, newOptions, ref);
 
           var marker = L.rotatedMarker(this._map.containerPointToLatLng([x, y]), newOptions)
               .addTo(this._borderMarkerLayer);
