@@ -8,6 +8,9 @@
 
   <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7/leaflet.css" />
   <link href='//fonts.googleapis.com/css?family=Open+Sans&amp;Ubuntu&amp;Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
   <!--[if lte IE 8]>
       <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7/leaflet.ie.css" />
   <![endif]-->
@@ -42,12 +45,7 @@
       color: lightgray;
     }
     pre{
-      font-family: 'Droid Sans Mono', sans-serif;
-      font-size: 10pt;
       text-align: left;
-      background-color: lightgray;
-      color: black;
-      padding: 1em;
     }
   </style>
 
@@ -59,26 +57,36 @@
   <div id="map"></div>
 
   <h2>Usage</h2>
-<pre style='color:#d1d1d1;background:#000000;'>
-<span style='color:#9999a9; '>// create a map</span>
-<span style='color:#e66170; font-weight:bold; '>var</span> map <span style='color:#d2cd86; '>=</span> L<span style='color:#d2cd86; '>.</span>map<span style='color:#d2cd86; '>(</span><span style='color:#00c4c4; '>'map'</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>setView<span style='color:#d2cd86; '>(</span><span style='color:#d2cd86; '>[</span><span style='color:#009f00; '>51.905</span><span style='color:#d2cd86; '>,</span> <span style='color:#009f00; '>7.69</span><span style='color:#d2cd86; '>]</span><span style='color:#d2cd86; '>,</span> <span style='color:#008c00; '>10</span><span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
+<pre>
+  <code class="hljs javascript">
+    // create a map
+    var map = L.map('map').setView([51.2,10.43], 6);
 
-<span style='color:#9999a9; '>// add an OpenStreetMap tile layer</span>
-L<span style='color:#d2cd86; '>.</span>tileLayer<span style='color:#d2cd86; '>(</span><span style='color:#00c4c4; '>'http://{s}.tile.osm.org/{z}/{x}/{y}.png'</span><span style='color:#d2cd86; '>,</span> <span style='color:#b060b0; '>{</span>
-    attribution<span style='color:#b060b0; '>:</span> <span style='color:#00c4c4; '>'&amp;copy; &lt;a href="http://osm.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors'</span>
-<span style='color:#b060b0; '>}</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
+    // add an OpenStreetMap tile layer
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-
-<span style='color:#9999a9; '>// add your Markers, Circles and CircleMarkers</span>
-L<span style='color:#d2cd86; '>.</span>circle<span style='color:#d2cd86; '>(</span><span style='color:#d2cd86; '>[</span><span style='color:#009f00; '>51.957807388715544</span><span style='color:#d2cd86; '>,</span> <span style='color:#009f00; '>7.591552734375</span><span style='color:#d2cd86; '>]</span><span style='color:#d2cd86; '>,</span> <span style='color:#008c00; '>1200</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
-L<span style='color:#d2cd86; '>.</span>circle<span style='color:#d2cd86; '>(</span><span style='color:#d2cd86; '>[</span><span style='color:#009f00; '>51.66339895213779</span><span style='color:#d2cd86; '>,</span> <span style='color:#009f00; '>9.378890991210938</span><span style='color:#d2cd86; '>]</span><span style='color:#d2cd86; '>,</span> <span style='color:#008c00; '>2200</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
-L<span style='color:#d2cd86; '>.</span>circleMarker<span style='color:#d2cd86; '>(</span><span style='color:#d2cd86; '>[</span><span style='color:#009f00; '>52.3688917060255</span><span style='color:#d2cd86; '>,</span> <span style='color:#009f00; '>9.722900390625</span><span style='color:#d2cd86; '>]</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
-L<span style='color:#d2cd86; '>.</span>circleMarker<span style='color:#d2cd86; '>(</span><span style='color:#d2cd86; '>[</span><span style='color:#009f00; '>51.508742458803326</span><span style='color:#d2cd86; '>,</span> <span style='color:#009f00; '>9.942626953125</span><span style='color:#d2cd86; '>]</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
-L<span style='color:#d2cd86; '>.</span>marker<span style='color:#d2cd86; '>(</span><span style='color:#d2cd86; '>[</span><span style='color:#009f00; '>53.553362785528094</span><span style='color:#d2cd86; '>,</span> <span style='color:#009f00; '>9.986572265624998</span><span style='color:#d2cd86; '>]</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
-L<span style='color:#d2cd86; '>.</span>marker<span style='color:#d2cd86; '>(</span><span style='color:#d2cd86; '>[</span><span style='color:#009f00; '>52.51622086393074</span><span style='color:#d2cd86; '>,</span> <span style='color:#009f00; '>13.392333984375</span><span style='color:#d2cd86; '>]</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
-
-<span style='color:#9999a9; '>// add the EdgeMarker to the map. It takes the options of a standard CircleMarker</span>
-L<span style='color:#d2cd86; '>.</span>edgeMarker<span style='color:#d2cd86; '>(</span><span style='color:#b060b0; '>{</span><span style='color:#00c4c4; '>'radius'</span><span style='color:#b060b0; '>:</span><span style='color:#008c00; '>20</span><span style='color:#b060b0; '>}</span><span style='color:#d2cd86; '>)</span><span style='color:#d2cd86; '>.</span>addTo<span style='color:#d2cd86; '>(</span>map<span style='color:#d2cd86; '>)</span><span style='color:#b060b0; '>;</span>
+    // add your Markers, Circles and CircleMarkers
+    L.circle([51.96309632078721, 7.622795104980469], 5000).addTo(map);
+    L.circle([51.650378463223326, 9.440699815750122], 200).addTo(map);
+    L.circleMarker([52.3688917060255, 9.722900390625]).addTo(map);
+    L.circleMarker([51.508742458803326, 9.942626953125]).addTo(map);
+    L.marker([48.85,2.35]).addTo(map);
+    L.marker([52.52,13.40]).addTo(map);
+    
+    // add the EdgeMarker to the map.
+    L.edgeMarker({
+      icon: L.icon({ // style markers
+          iconUrl : 'images/edge-arrow-marker-black.png',
+          clickable: true,
+          iconSize: [48,48],
+          iconAnchor: [24, 24]
+      },
+      rotateIcons: true, // rotate EdgeMarkers depending on their relative position
+      layerGroup: null // you can specify a certain L.layerGroup to create the edge markers from.
+    }).addTo(map);
+  </code>
 </pre>
 
 <p class="maintainer">maintained by <a class="maintainer" href="https://github.com/ubergesundheit" target="_blank">ubergesundheit</a></p>
@@ -131,8 +139,15 @@ L<span style='color:#d2cd86; '>.</span>edgeMarker<span style='color:#d2cd86; '>(
     L.marker([46.95,7.45]).addTo(map);
     L.marker([50.43,30.52]).addTo(map);
     
-    // add the EdgeMarker to the map. It takes the options of a standard CircleMarker
-    L.edgeMarker({"radius":20,"weight":3}).addTo(map);
+    // add the EdgeMarker to the map.
+    L.edgeMarker({
+      icon: L.icon({ // style markers
+          iconUrl : 'images/edge-arrow-marker-black.png',
+          clickable: true,
+          iconSize: [48,48],
+          iconAnchor: [24, 24]
+      })
+    }).addTo(map);
 
   </script> 
 
