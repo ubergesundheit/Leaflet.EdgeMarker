@@ -1,0 +1,22 @@
+{
+  "name": "Leaflet_EdgeMarker",
+  "version": "0.0.0",
+  "homepage": "https://github.com/vko-online/Leaflet.EdgeMarker",
+  "authors": [
+    "evc <m.diddy_11@mail.ru>"
+  ],
+  "description": "Leaflet EdgeMarker is a Leaflet plugin which allows you to indicate Markers, Circles and CircleMarkers that are outside of the current view by displaying CircleMarkers at the edges of the map.",
+  "main": "Leaflet.EdgeMarker.js",
+  "keywords": [
+    "leaflet",
+    "edge"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
