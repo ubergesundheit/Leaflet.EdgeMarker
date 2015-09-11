@@ -11,7 +11,14 @@ Check out the [demo](http://ubergesundheit.github.io/Leaflet.EdgeMarker)
 Usage
 -----
 
+  * `bower install Leaflet.EdgeMarker`
+
+or
+
   * Download the `Leaflet.EdgeMarker.js`
+
+then
+
   * Include the file after you included `leaflet.js` 
   * copy `images/edge-arrow-marker.png` to the leaflet image directory or specify your own marker icon (see demo).
   * Initialize the EdgeMarkers with `L.edgeMarker().addTo(map)` **after** you initialized your `map` and Markers/Circles/CircleMarkers
