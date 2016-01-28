@@ -1,7 +1,12 @@
 (function (L) {
   'use strict';
 
-  L.EdgeMarker = L.Class.extend({
+  var classToExtend = "Class";
+  if (L.version.charAt(0) !== "0") {
+    classToExtend = "Layer";
+  }
+
+  L.EdgeMarker = L[classToExtend].extend({
 
     options: {
       distanceOpacity: false,
