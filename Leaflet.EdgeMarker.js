@@ -40,9 +40,6 @@
       map.on('viewreset', this._addEdgeMarkers, this);
 
       this._addEdgeMarkers();
-
-      map.addLayer(this);
-
       return this;
     },
 
