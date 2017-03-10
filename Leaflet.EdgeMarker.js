@@ -9,7 +9,7 @@
       layerGroup: null,
       rotateIcons: true,
       icon: L.icon({
-          iconUrl: L.Icon.Default.imagePath + '/edge-arrow-marker.png',
+          iconUrl:  'images/edge-arrow-marker.png',
           clickable: true,
           iconSize: [48, 48],
           iconAnchor: [24, 24]
