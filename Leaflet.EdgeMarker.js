@@ -16,7 +16,8 @@
       })
     },
 
-    initialize: function (options) {
+    initialize: function (latlng,options) {
+      this._target=latlng;
       L.setOptions(this, options);
     },
 
@@ -57,76 +58,65 @@
       }
       this._borderMarkerLayer.clearLayers();
 
-      var features = [];
-      if (this.options.layerGroup != null) {
-        features = this.options.layerGroup.getLayers();
-      } else {
-        features = this._map._getFeatures();
-      }
-
       var mapPixelBounds = this._map.getSize();
 
       var markerWidth = this.options.icon.options.iconSize[0];
       var markerHeight = this.options.icon.options.iconSize[1];
 
-      for (var i = 0; i < features.length; i++) {
-
-        var currentMarkerPosition = this._map.latLngToContainerPoint(
-                                                  features[i].getLatLng());
+      var currentMarkerPosition = this._map.latLngToContainerPoint( this._target);
 
         if (currentMarkerPosition.y < 0 ||
             currentMarkerPosition.y > mapPixelBounds.y ||
             currentMarkerPosition.x > mapPixelBounds.x ||
             currentMarkerPosition.x < 0) {
 
-          // get pos of marker
-          var x = currentMarkerPosition.x;
-          var y = currentMarkerPosition.y;
-          var markerDistance;
+            // get pos of marker
+            var x = currentMarkerPosition.x;
+            var y = currentMarkerPosition.y;
+            var markerDistance;
 
-          // bottom out
-          if (currentMarkerPosition.y < 0) {
-            y = 0 + markerHeight / 2;
-            markerDistance = -currentMarkerPosition.y;
-          // top out
-          } else if (currentMarkerPosition.y > mapPixelBounds.y) {
-            y = mapPixelBounds.y - markerHeight / 2;
-            markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
-          }
+            // bottom out
+            if (currentMarkerPosition.y < 0) {
+                y = 0 + markerHeight / 2;
+                markerDistance = -currentMarkerPosition.y;
+                // top out
+            } else if (currentMarkerPosition.y > mapPixelBounds.y) {
+                y = mapPixelBounds.y - markerHeight / 2;
+                markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
+            }
 
-          // right out
-          if (currentMarkerPosition.x > mapPixelBounds.x) {
-            x = mapPixelBounds.x - markerWidth / 2;
-            markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
-          // left out
-          } else if (currentMarkerPosition.x < 0) {
-            x = 0 + markerWidth / 2;
-            markerDistance = -currentMarkerPosition.x;
-          }
+            // right out
+            if (currentMarkerPosition.x > mapPixelBounds.x) {
+                x = mapPixelBounds.x - markerWidth / 2;
+                markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
+                // left out
+            } else if (currentMarkerPosition.x < 0) {
+                x = 0 + markerWidth / 2;
+                markerDistance = -currentMarkerPosition.x;
+            }
 
-          // change opacity on distance
-          var newOptions = this.options;
-          if (this.options.distanceOpacity) {
-            newOptions.fillOpacity = (100 - (markerDistance / this.options.distanceOpacityFactor)) / 100;
-          }
+            // change opacity on distance
+            var newOptions = this.options;
+            if (this.options.distanceOpacity) {
+                newOptions.fillOpacity = (100 - (markerDistance / this.options.distanceOpacityFactor)) / 100;
+            }
 
-          // rotate markers
-          if (this.options.rotateIcons) {
-            var centerX = mapPixelBounds.x / 2;
-            var centerY = mapPixelBounds.y / 2;
-            var angle = Math.atan2(centerY - y, centerX - x) / Math.PI * 180;
-            newOptions.angle = angle;
-          }
+            // rotate markers
+            if (this.options.rotateIcons) {
+                var centerX = mapPixelBounds.x / 2;
+                var centerY = mapPixelBounds.y / 2;
+                var angle = Math.atan2(centerY - y, centerX - x) / Math.PI * 180;
+                newOptions.angle = angle;
+            }
 
-          var ref = {latlng: features[i].getLatLng()};
-          newOptions = L.extend({}, newOptions, ref);
+            var ref = {latlng: this._target};
+            newOptions = L.extend({}, newOptions, ref);
 
-          var marker = L.rotatedMarker(this._map.containerPointToLatLng([x, y]), newOptions)
-              .addTo(this._borderMarkerLayer);
+            var marker = L.rotatedMarker(this._map.containerPointToLatLng([x, y]), newOptions)
+                .addTo(this._borderMarkerLayer);
 
-          marker.on('click', this.onClick, marker);
+            marker.on('click', this.onClick, marker);
         }
-      }
       if (!this._map.hasLayer(this._borderMarkerLayer)) {
         this._borderMarkerLayer.addTo(this._map);
       }
@@ -163,8 +153,8 @@
     return new L.RotatedMarker(pos, options);
   };
 
-  L.edgeMarker = function (options) {
-    return new L.EdgeMarker(options);
+  L.edgeMarker = function (latlng, options) {
+    return new L.EdgeMarker(latlng, options);
   };
 
 })(L);
