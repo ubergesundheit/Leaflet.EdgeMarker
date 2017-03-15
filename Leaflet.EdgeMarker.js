@@ -1,7 +1,7 @@
 (function (L) {
   'use strict';
 
-  L.EdgeMarker = L.Class.extend({
+  L.EdgeMarker = L.Layer.extend({
 
     options: {
       icon: L.icon({
@@ -33,13 +33,9 @@
 
     onAdd: function () {},
 
-    _borderMarkerLayer: undefined,
+    _marker: undefined,
 
     _addEdgeMarkers: function () {
-      if (typeof this._borderMarkerLayer === 'undefined') {
-        this._borderMarkerLayer = new L.LayerGroup();
-      }
-      this._borderMarkerLayer.clearLayers();
 
       var mapPixelBounds = L.bounds([0,0],this._map.getSize());
       var currentMarkerPosition = this._map.latLngToContainerPoint( this._target);
@@ -90,17 +86,23 @@
                 x = mapPixelBounds.min.x + markerWidth / 2;
             }
 
+            var  latlng = this._map.containerPointToLatLng([x, y]);
+            if (typeof this._marker === 'undefined') {
+                this._marker = L.marker(latlng, this.options).addTo(this._map);
+            }else {
+                this._marker.setLatLng(latlng);
+            }
+                // .addTo(this._borderMarkerLayer);
 
-            var marker = L.marker(this._map.containerPointToLatLng([x, y]), this.options)
-                .addTo(this._borderMarkerLayer);
+            this._marker.setRotationAngle(rad / Math.PI * 180);
+            this._marker.on('click', this.onClick, this._marker);
 
-            marker.on('click', this.onClick, marker);
-
-            marker.setRotationAngle(rad / Math.PI * 180);
+        } else {
+            if (! (typeof this._marker === 'undefined')) {
+                this._marker.remove();
+                this._marker=undefined;
+            }
         }
-      if (!this._map.hasLayer(this._borderMarkerLayer)) {
-        this._borderMarkerLayer.addTo(this._map);
-      }
     }
   });
 
