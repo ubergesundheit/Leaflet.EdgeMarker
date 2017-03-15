@@ -28,7 +28,7 @@
     },
 
     onClick: function (e) {
-      this._map.setView(e.target.options.latlng, this._map.getZoom());
+      this._map.setView(e.latlng, this._map.getZoom());
     },
 
     onAdd: function () {},
@@ -89,13 +89,14 @@
             var  latlng = this._map.containerPointToLatLng([x, y]);
             if (typeof this._marker === 'undefined') {
                 this._marker = L.marker(latlng, this.options).addTo(this._map);
+
+                this._marker.on('click', this.onClick, this._marker);
             }else {
                 this._marker.setLatLng(latlng);
             }
                 // .addTo(this._borderMarkerLayer);
 
             this._marker.setRotationAngle(rad / Math.PI * 180);
-            this._marker.on('click', this.onClick, this._marker);
 
         } else {
             if (! (typeof this._marker === 'undefined')) {
