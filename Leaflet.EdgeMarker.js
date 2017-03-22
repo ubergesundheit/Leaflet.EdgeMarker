@@ -60,41 +60,48 @@
 
             // maker is in between diagonals window
             if (Math.abs(rad) > rad2TopLeftcorner && Math.abs (rad) < Math.PI -rad2TopLeftcorner) {
-                x = center.x -  center.y/ Math.tan(Math.abs(rad));
-            }else {
-                if (x< center.x ){
-                    y = center.y -  center.x *Math.tan(rad);
+
+                if (y < center.y ){
+                    y = mapPixelBounds.min.y + markerHeight/2;
+                    x = center.x -  (center.y-y) / Math.tan(Math.abs(rad));
                 }else{
 
-                    y = center.y +  center.x *Math.tan(rad);
+                    y = mapPixelBounds.max.y - markerHeight/2;
+                    x = center.x -  (y-center.y)/ Math.tan(Math.abs(rad));
+                }
+            }else {
+                if (x < center.x ){
+                    x = mapPixelBounds.min.x + markerWidth/2;
+                    y = center.y -  (center.x-x ) *Math.tan(rad);
+                }else{
+                    x = mapPixelBounds.max.x - markerWidth/2;
+                    y = center.y +  (x - center.x) *Math.tan(rad);
                 }
             }
 
             // top out (top has y=0)
-            if (currentMarkerPosition.y < mapPixelBounds.min.y ) {
+            if (y < mapPixelBounds.min.y + markerHeight/2) {
                 y = mapPixelBounds.min.y + markerHeight/2;
             // bottom out
             }
-            else if (currentMarkerPosition.y > mapPixelBounds.max.y) {
+            else if (y > mapPixelBounds.max.y - markerHeight/2) {
                 y = mapPixelBounds.max.y - markerHeight/2 ;
             }
             // right out
-            if (currentMarkerPosition.x > mapPixelBounds.max.x) {
+            if (x > mapPixelBounds.max.x- markerWidth / 2) {
                 x = mapPixelBounds.max.x - markerWidth / 2;
             // left out
-            } else if (currentMarkerPosition.x < mapPixelBounds.min.x) {
+            } else if (x < mapPixelBounds.min.x+ markerWidth / 2) {
                 x = mapPixelBounds.min.x + markerWidth / 2;
             }
 
             var  latlng = this._map.containerPointToLatLng([x, y]);
             if (typeof this._marker === 'undefined') {
                 this._marker = L.marker(latlng, this.options).addTo(this._map);
-
                 this._marker.on('click', this.onClick, this._marker);
             }else {
                 this._marker.setLatLng(latlng);
             }
-                // .addTo(this._borderMarkerLayer);
 
             this._marker.setRotationAngle(rad / Math.PI * 180);
 
