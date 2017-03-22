@@ -111,11 +111,37 @@
                 this._marker=undefined;
             }
         }
-    }
+    },
+
+    setTarget(latlng){
+        this._target=latlng;
+        this._addEdgeMarkers();
+    },
   });
 
   L.edgeMarker = function (latlng, options) {
     return new L.EdgeMarker(latlng, options);
   };
 
+L.Layer.include({
+
+    bindEdgeMarker(options){
+        if (!this._edgeMarkerHandlersAdded) {
+
+            this._edgeMarker=L.edgeMarker(options);
+            this._edgeMarker._target=(this.getLatLng());
+            this._edgeMarker.addTo(this._map);
+            this.on({
+                remove: this._edgeMarker.remove(),
+                move: function (e){
+                        this._edgeMarker.setTarget(e.latlng);
+                    },
+            });
+            this._edgeMarkerHandlersAdded = true;
+        }
+    return this;
+    },
+});
+
 })(L);
+
