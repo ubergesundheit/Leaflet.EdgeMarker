@@ -85,6 +85,9 @@
       rotateIcons: true, // rotate EdgeMarkers depending on their relative position
       layerGroup: null // you can specify a certain L.layerGroup to create the edge markers from.
     }).addTo(map);
+
+    // if you want to remove the edge markers
+    // edgeMarkerLayer.destroy();
   </code>
 </pre>
 
@@ -139,7 +142,7 @@
     L.marker([50.43,30.52]).addTo(map);
 
     // add the EdgeMarker to the map.
-    L.edgeMarker({
+    var edgeMarkerLayer = L.edgeMarker({
       icon: L.icon({ // style markers
           iconUrl : 'images/edge-arrow-marker-black.png',
           clickable: true,
@@ -148,6 +151,8 @@
       })
     }).addTo(map);
 
+    // if you want to remove the edge markers
+    // edgeMarkerLayer.destroy();
   </script>
 
 </body>
