@@ -46,6 +46,18 @@
       return this;
     },
 
+    destroy: function () {
+      if (this._map && this._borderMarkerLayer) {
+        this._map.off('move', this._addEdgeMarkers, this);
+        this._map.off('viewreset', this._addEdgeMarkers, this);
+
+        this._borderMarkerLayer.clearLayers();
+        this._map.removeLayer(this._borderMarkerLayer);
+
+        this._borderMarkerLayer = undefined;
+      }
+    },
+
     onClick: function (e) {
       this._map.setView(e.target.options.latlng, this._map.getZoom());
     },
