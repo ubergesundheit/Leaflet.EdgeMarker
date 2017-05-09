@@ -29,17 +29,19 @@
       this._map = map;
 
       // add a method to get applicable features
-      L.extend(map, {
-        _getFeatures: function () {
-          var out = [];
-          for (var l in this._layers) {
-            if (typeof this._layers[l].getLatLng !== 'undefined') {
-              out.push(this._layers[l]);
+      if (typeof map._getFeatures !== 'function') {
+        L.extend(map, {
+          _getFeatures: function () {
+            var out = [];
+            for (var l in this._layers) {
+              if (typeof this._layers[l].getLatLng !== 'undefined') {
+                out.push(this._layers[l]);
+              }
             }
+            return out;
           }
-          return out;
-        }
-      });
+        });
+      }
 
       map.on('move', this._addEdgeMarkers, this);
       map.on('viewreset', this._addEdgeMarkers, this);
@@ -58,6 +60,8 @@
 
         this._borderMarkerLayer.clearLayers();
         this._map.removeLayer(this._borderMarkerLayer);
+
+        delete this._map._getFeatures;
 
         this._borderMarkerLayer = undefined;
       }
