@@ -27,11 +27,17 @@
       return this;
     },
 
+    remove: function(){
+      this._map.off('move', this._addEdgeMarkers, this);
+      this._map.off('viewreset', this._addEdgeMarkers, this);
+      this._removeMarker();
+      L.Layer.prototype.remove.call(this);
+
+    },
+
     onClick: function (e) {
       this._map.setView(e.latlng, this._map.getZoom());
     },
-
-    onAdd: function () {},
 
     _marker: undefined,
 
@@ -126,6 +132,7 @@
       this._target=latlng;
       this._addEdgeMarkers();
     },
+    _makeThisTarget: function (object){this.setTarget(object.latlng);},
   });
 
   L.edgeMarker = function (latlng, options) {
@@ -137,18 +144,24 @@
     bindEdgeMarker: function (options){
       if (!this._edgeMarkerHandlersAdded) {
 
-        this._edgeMarker=L.edgeMarker(options);
+        this._edgeMarker = L.edgeMarker(options);
         this._edgeMarker._target=(this.getLatLng());
         this._edgeMarker.addTo(this._map);
-        this.on({
-          remove: this._edgeMarker.remove(),
-          move: function (e){
-            this._edgeMarker.setTarget(e.latlng);
-          },
-        });
+        this.on('remove', this._edgeMarker.remove, this._edgeMarker);
+        this.on('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
         this._edgeMarkerHandlersAdded = true;
       }
       return this;
+    },
+
+    unbindEdgeMarker: function (){
+      if (this._edgeMarker){
+        this.off('remove', this._edgeMarker.remove, this._edgeMarker);
+        this.off('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
+        this._edgeMarker.remove();
+        this._edgeMarker=undefined;
+        this._edgeMarkerHandlersAdded=false;
+      }
     },
   });
 
