@@ -37,7 +37,7 @@
       this._map.off('move', this.update, this);
       this._map.off('viewreset', this.update, this);
       this._removeMarker();
-      L.Layer.prototype.remove.call(this);
+      this._map.removeLayer(this);
 
     },
 
@@ -128,7 +128,7 @@
 
     _removeMarker: function (){
       if (! (typeof this._marker === 'undefined')) {
-        this._marker.remove();
+        this._map.removeLayer(this._marker);
         this._marker=undefined;
 
       }
@@ -145,14 +145,14 @@
     return new L.EdgeMarker(latlng, options);
   };
 
-  L.Layer.include({
+  L[classToExtend].include({
 
     bindEdgeMarker: function (options){
       if (!this._edgeMarkerHandlersAdded) {
 
         this._edgeMarker = L.edgeMarker(this.getLatLng(),options);
         this._edgeMarker.addTo(this._map);
-        this.on('remove', this._edgeMarker.remove, this._edgeMarker);
+        this.on('remove', this._edgeMarker.remove, this._edgeMarker); // does not fire on leaflet 0.7
         this.on('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
         this._edgeMarkerHandlersAdded = true;
       }
@@ -161,7 +161,7 @@
 
     unbindEdgeMarker: function (){
       if (this._edgeMarker){
-        this.off('remove', this._edgeMarker.remove, this._edgeMarker);
+        this.off('remove', this._edgeMarker.remove, this._edgeMarker);// does not have effect on leaflet 0.7
         this.off('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
         this._edgeMarker.remove();
         this._edgeMarker=undefined;
