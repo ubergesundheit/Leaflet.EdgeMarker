@@ -1,0 +1,18 @@
+{
+  "name": "leaflet.edgemarker",
+  "version": "1.0.0",
+  "description": "A Leaflet Plugin to indicate GeoFeatures outside of the view",
+  "main": "Leaflet.EdgeMarker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwibus/Leaflet.EdgeMarker.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kwibus/Leaflet.EdgeMarker/issues"
+  },
+  "homepage": "https://github.com/kwibus/Leaflet.EdgeMarker#readme"
+}
