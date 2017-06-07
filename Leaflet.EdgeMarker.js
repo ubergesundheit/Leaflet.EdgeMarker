@@ -4,6 +4,9 @@
   L.EdgeMarker = L.Layer.extend({
 
     options: {
+      findEdge : function (map){
+        return L.bounds([0,0], map.getSize());
+      },
       icon: L.icon({
         iconUrl:  'images/edge-arrow-marker.png',
         clickable: true,
@@ -43,8 +46,8 @@
 
     update: function () {
 
-      var mapPixelBounds = L.bounds([0,0],this._map.getSize());
-      if ( this._target  != undefined){
+      if ( this._target  != undefined && this._map!=undefined){
+        var mapPixelBounds = this.options.findEdge(this._map);
         var currentMarkerPosition = this._map.latLngToContainerPoint( this._target);
 
         if (currentMarkerPosition.y < mapPixelBounds.min.y ||
