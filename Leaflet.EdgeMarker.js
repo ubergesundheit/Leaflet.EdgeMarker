@@ -144,8 +144,7 @@
     bindEdgeMarker: function (options){
       if (!this._edgeMarkerHandlersAdded) {
 
-        this._edgeMarker = L.edgeMarker(options);
-        this._edgeMarker._target=(this.getLatLng());
+        this._edgeMarker = L.edgeMarker(this.getLatLng(),options);
         this._edgeMarker.addTo(this._map);
         this.on('remove', this._edgeMarker.remove, this._edgeMarker);
         this.on('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
