@@ -7,217 +7,167 @@
 
   L.EdgeMarker = L[classToExtend].extend({
     options: {
-      distanceOpacity: false,
-      distanceOpacityFactor: 4,
-      layerGroup: null,
-      rotateIcons: true,
+      findEdge : function (map){
+        return L.bounds([0,0], map.getSize());
+      },
       icon: L.icon({
-        iconUrl: L.Icon.Default.imagePath + '/edge-arrow-marker.png',
+        iconUrl:  'images/edge-arrow-marker.png',
         clickable: true,
         iconSize: [48, 48],
         iconAnchor: [24, 24]
       })
     },
 
-    initialize: function(options) {
+    initialize: function (latlng,options) {
+      this._target=latlng;
       L.setOptions(this, options);
     },
 
-    addTo: function(map) {
+    addTo: function (map) {
       this._map = map;
 
-      // add a method to get applicable features
-      if (typeof map._getFeatures !== 'function') {
-        L.extend(map, {
-          _getFeatures: function() {
-            var out = [];
-            for (var l in this._layers) {
-              if (typeof this._layers[l].getLatLng !== 'undefined') {
-                out.push(this._layers[l]);
-              }
-            }
-            return out;
-          }
-        });
-      }
+      map.on('move', this.update, this);
+      map.on('viewreset', this.update, this);
 
-      map.on('move', this._addEdgeMarkers, this);
-      map.on('viewreset', this._addEdgeMarkers, this);
-
-      this._addEdgeMarkers();
-
-      map.addLayer(this);
-
+      this.update();
       return this;
     },
 
-    destroy: function() {
-      if (this._map && this._borderMarkerLayer) {
-        this._map.off('move', this._addEdgeMarkers, this);
-        this._map.off('viewreset', this._addEdgeMarkers, this);
+    remove: function(){
+      this._map.off('move', this.update, this);
+      this._map.off('viewreset', this.update, this);
+      this._removeMarker();
+      this._map.removeLayer(this);
 
-        this._borderMarkerLayer.clearLayers();
-        this._map.removeLayer(this._borderMarkerLayer);
-
-        delete this._map._getFeatures;
-
-        this._borderMarkerLayer = undefined;
-      }
     },
 
-    onClick: function(e) {
-      this._map.setView(e.target.options.latlng, this._map.getZoom());
+    onClick: function (e) {
+      this._map.setView(e.latlng, this._map.getZoom());
     },
 
-    onAdd: function() {},
+    _marker: undefined,
 
-    _borderMarkerLayer: undefined,
+    update: function () {
 
-    _addEdgeMarkers: function() {
-      if (typeof this._borderMarkerLayer === 'undefined') {
-        this._borderMarkerLayer = new L.LayerGroup();
-      }
-      this._borderMarkerLayer.clearLayers();
+      if ( this._target  != undefined && this._map!=undefined){
+        var mapPixelBounds = this.options.findEdge(this._map);
+        var currentMarkerPosition = this._map.latLngToContainerPoint( this._target);
 
-      var features = [];
-      if (this.options.layerGroup != null) {
-        features = this.options.layerGroup.getLayers();
-      } else {
-        features = this._map._getFeatures();
-      }
+        if (currentMarkerPosition.y < mapPixelBounds.min.y ||
+          currentMarkerPosition.y > mapPixelBounds.max.y ||
+          currentMarkerPosition.x > mapPixelBounds.max.x ||
+          currentMarkerPosition.x < mapPixelBounds.min.x) {
 
-      var mapPixelBounds = this._map.getSize();
-
-      var markerWidth = this.options.icon.options.iconSize[0];
-      var markerHeight = this.options.icon.options.iconSize[1];
-
-      for (var i = 0; i < features.length; i++) {
-        var currentMarkerPosition = this._map.latLngToContainerPoint(
-          features[i].getLatLng()
-        );
-
-        if (
-          currentMarkerPosition.y < 0 ||
-          currentMarkerPosition.y > mapPixelBounds.y ||
-          currentMarkerPosition.x > mapPixelBounds.x ||
-          currentMarkerPosition.x < 0
-        ) {
           // get pos of marker
           var x = currentMarkerPosition.x;
           var y = currentMarkerPosition.y;
-          var markerDistance;
 
-          // top out
-          if (currentMarkerPosition.y < 0) {
-            y = 0 + markerHeight / 2;
-            markerDistance = -currentMarkerPosition.y;
+          var markerWidth = this.options.icon.options.iconSize[0];
+          var markerHeight = this.options.icon.options.iconSize[1];
+
+          var center = mapPixelBounds.getCenter();
+
+
+          var rad = Math.atan2(center.y - y, center.x - x);
+          var rad2TopLeftcorner = Math.atan2(center.y-mapPixelBounds.min.y,center.x-mapPixelBounds.min.x);
+
+          // maker is in between diagonals window
+          if (Math.abs(rad) > rad2TopLeftcorner && Math.abs (rad) < Math.PI -rad2TopLeftcorner) {
+
+            if (y < center.y ){
+              y = mapPixelBounds.min.y + markerHeight/2;
+              x = center.x -  (center.y-y) / Math.tan(Math.abs(rad));
+            }else{
+
+              y = mapPixelBounds.max.y - markerHeight/2;
+              x = center.x -  (y-center.y)/ Math.tan(Math.abs(rad));
+            }
+          }else {
+            if (x < center.x ){
+              x = mapPixelBounds.min.x + markerWidth/2;
+              y = center.y -  (center.x-x ) *Math.tan(rad);
+            }else{
+              x = mapPixelBounds.max.x - markerWidth/2;
+              y = center.y +  (x - center.x) *Math.tan(rad);
+            }
+          }
+
+          // top out (top has y=0)
+          if (y < mapPixelBounds.min.y + markerHeight/2) {
+            y = mapPixelBounds.min.y + markerHeight/2;
             // bottom out
-          } else if (currentMarkerPosition.y > mapPixelBounds.y) {
-            y = mapPixelBounds.y - markerHeight / 2;
-            markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
           }
-
+          else if (y > mapPixelBounds.max.y - markerHeight/2) {
+            y = mapPixelBounds.max.y - markerHeight/2 ;
+          }
           // right out
-          if (currentMarkerPosition.x > mapPixelBounds.x) {
-            x = mapPixelBounds.x - markerWidth / 2;
-            markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
+          if (x > mapPixelBounds.max.x- markerWidth / 2) {
+            x = mapPixelBounds.max.x - markerWidth / 2;
             // left out
-          } else if (currentMarkerPosition.x < 0) {
-            x = 0 + markerWidth / 2;
-            markerDistance = -currentMarkerPosition.x;
+          } else if (x < mapPixelBounds.min.x+ markerWidth / 2) {
+            x = mapPixelBounds.min.x + markerWidth / 2;
           }
 
-          // change opacity on distance
-          var newOptions = this.options;
-          if (this.options.distanceOpacity) {
-            newOptions.fillOpacity =
-              (100 - markerDistance / this.options.distanceOpacityFactor) / 100;
+          var  latlng = this._map.containerPointToLatLng([x, y]);
+          if (typeof this._marker === 'undefined') {
+            this._marker = L.marker(latlng, this.options).addTo(this._map);
+            this._marker.on('click', this.onClick, this._marker);
+          }else {
+            this._marker.setLatLng(latlng);
           }
 
-          // rotate markers
-          if (this.options.rotateIcons) {
-            var centerX = mapPixelBounds.x / 2;
-            var centerY = mapPixelBounds.y / 2;
-            var angle = Math.atan2(centerY - y, centerX - x) / Math.PI * 180;
-            newOptions.angle = angle;
-          }
+          this._marker.setRotationAngle(rad / Math.PI * 180);
 
-          var ref = { latlng: features[i].getLatLng() };
-          newOptions = L.extend({}, newOptions, ref);
-
-          var marker = L.rotatedMarker(
-            this._map.containerPointToLatLng([x, y]),
-            newOptions
-          ).addTo(this._borderMarkerLayer);
-
-          marker.on('click', this.onClick, marker);
+        } else {
+          this._removeMarker();
         }
+      }else{
+        this._removeMarker();
       }
-      if (!this._map.hasLayer(this._borderMarkerLayer)) {
-        this._borderMarkerLayer.addTo(this._map);
+    },
+
+    _removeMarker: function (){
+      if (! (typeof this._marker === 'undefined')) {
+        this._map.removeLayer(this._marker);
+        this._marker=undefined;
+
       }
-    }
+    },
+
+    setTarget: function (latlng){
+      this._target=latlng;
+      this.update();
+    },
+    _makeThisTarget: function (object){this.setTarget(object.latlng);},
   });
 
-  /*
-   * L.rotatedMarker class is taken from https://github.com/bbecquet/Leaflet.PolylineDecorator.
-   */
-  L.RotatedMarker = L.Marker.extend({
-    options: {
-      angle: 0
+  L.edgeMarker = function (latlng, options) {
+    return new L.EdgeMarker(latlng, options);
+  };
+
+  L[classToExtend].include({
+
+    bindEdgeMarker: function (options){
+      if (!this._edgeMarkerHandlersAdded) {
+
+        this._edgeMarker = L.edgeMarker(this.getLatLng(),options);
+        this._edgeMarker.addTo(this._map);
+        this.on('remove', this._edgeMarker.remove, this._edgeMarker); // does not fire on leaflet 0.7
+        this.on('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
+        this._edgeMarkerHandlersAdded = true;
+      }
+      return this;
     },
 
-    statics: {
-      TRANSFORM_ORIGIN: L.DomUtil.testProp([
-        'transformOrigin',
-        'WebkitTransformOrigin',
-        'OTransformOrigin',
-        'MozTransformOrigin',
-        'msTransformOrigin'
-      ])
-    },
-
-    _initIcon: function() {
-      L.Marker.prototype._initIcon.call(this);
-
-      this._icon.style[L.RotatedMarker.TRANSFORM_ORIGIN] = '50% 50%';
-    },
-
-    _setPos: function(pos) {
-      L.Marker.prototype._setPos.call(this, pos);
-
-      if (L.DomUtil.TRANSFORM) {
-        // use the CSS transform rule if available
-        this._icon.style[L.DomUtil.TRANSFORM] +=
-          ' rotate(' + this.options.angle + 'deg)';
-      } else if (L.Browser.ie) {
-        // fallback for IE6, IE7, IE8
-        var rad = this.options.angle * (Math.PI / 180),
-          costheta = Math.cos(rad),
-          sintheta = Math.sin(rad);
-        this._icon.style.filter +=
-          " progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=" +
-          costheta +
-          ', M12=' +
-          -sintheta +
-          ', M21=' +
-          sintheta +
-          ', M22=' +
-          costheta +
-          ')';
+    unbindEdgeMarker: function (){
+      if (this._edgeMarker){
+        this.off('remove', this._edgeMarker.remove, this._edgeMarker);// does not have effect on leaflet 0.7
+        this.off('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
+        this._edgeMarker.remove();
+        this._edgeMarker=undefined;
+        this._edgeMarkerHandlersAdded=false;
       }
     },
-
-    setAngle: function(ang) {
-      this.options.angle = ang;
-    }
   });
 
-  L.rotatedMarker = function(pos, options) {
-    return new L.RotatedMarker(pos, options);
-  };
-
-  L.edgeMarker = function(options) {
-    return new L.EdgeMarker(options);
-  };
 })(L);
