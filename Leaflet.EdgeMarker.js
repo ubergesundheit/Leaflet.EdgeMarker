@@ -1,8 +1,11 @@
-(function (L) {
+(function(L) {
   'use strict';
+  var classToExtend = 'Class';
+  if (L.version.charAt(0) !== '0') {
+    classToExtend = 'Layer';
+  }
 
-  L.EdgeMarker = L.Layer.extend({
-
+  L.EdgeMarker = L[classToExtend].extend({
     options: {
       findEdge : function (map){
         return L.bounds([0,0], map.getSize());
@@ -168,4 +171,3 @@
   });
 
 })(L);
-
