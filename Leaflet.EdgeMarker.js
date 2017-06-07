@@ -5,10 +5,10 @@
 
     options: {
       icon: L.icon({
-          iconUrl:  'images/edge-arrow-marker.png',
-          clickable: true,
-          iconSize: [48, 48],
-          iconAnchor: [24, 24]
+        iconUrl:  'images/edge-arrow-marker.png',
+        clickable: true,
+        iconSize: [48, 48],
+        iconAnchor: [24, 24]
       })
     },
 
@@ -40,82 +40,81 @@
       var mapPixelBounds = L.bounds([0,0],this._map.getSize());
       var currentMarkerPosition = this._map.latLngToContainerPoint( this._target);
 
-        if (currentMarkerPosition.y < mapPixelBounds.min.y ||
-            currentMarkerPosition.y > mapPixelBounds.max.y ||
-            currentMarkerPosition.x > mapPixelBounds.max.x ||
-            currentMarkerPosition.x < mapPixelBounds.min.x) {
+      if (currentMarkerPosition.y < mapPixelBounds.min.y ||
+        currentMarkerPosition.y > mapPixelBounds.max.y ||
+        currentMarkerPosition.x > mapPixelBounds.max.x ||
+        currentMarkerPosition.x < mapPixelBounds.min.x) {
 
-            // get pos of marker
-            var x = currentMarkerPosition.x;
-            var y = currentMarkerPosition.y;
+        // get pos of marker
+        var x = currentMarkerPosition.x;
+        var y = currentMarkerPosition.y;
 
-            var markerWidth = this.options.icon.options.iconSize[0];
-            var markerHeight = this.options.icon.options.iconSize[1];
+        var markerWidth = this.options.icon.options.iconSize[0];
+        var markerHeight = this.options.icon.options.iconSize[1];
 
-            var center = mapPixelBounds.getCenter();
+        var center = mapPixelBounds.getCenter();
 
 
-            var rad = Math.atan2(center.y - y, center.x - x);
-            var rad2TopLeftcorner= Math.atan2(center.y-mapPixelBounds.min.y,center.x-mapPixelBounds.min.x)
+        var rad = Math.atan2(center.y - y, center.x - x);
+        var rad2TopLeftcorner = Math.atan2(center.y-mapPixelBounds.min.y,center.x-mapPixelBounds.min.x);
 
-            // maker is in between diagonals window
-            if (Math.abs(rad) > rad2TopLeftcorner && Math.abs (rad) < Math.PI -rad2TopLeftcorner) {
+        // maker is in between diagonals window
+        if (Math.abs(rad) > rad2TopLeftcorner && Math.abs (rad) < Math.PI -rad2TopLeftcorner) {
 
-                if (y < center.y ){
-                    y = mapPixelBounds.min.y + markerHeight/2;
-                    x = center.x -  (center.y-y) / Math.tan(Math.abs(rad));
-                }else{
+          if (y < center.y ){
+            y = mapPixelBounds.min.y + markerHeight/2;
+            x = center.x -  (center.y-y) / Math.tan(Math.abs(rad));
+          }else{
 
-                    y = mapPixelBounds.max.y - markerHeight/2;
-                    x = center.x -  (y-center.y)/ Math.tan(Math.abs(rad));
-                }
-            }else {
-                if (x < center.x ){
-                    x = mapPixelBounds.min.x + markerWidth/2;
-                    y = center.y -  (center.x-x ) *Math.tan(rad);
-                }else{
-                    x = mapPixelBounds.max.x - markerWidth/2;
-                    y = center.y +  (x - center.x) *Math.tan(rad);
-                }
-            }
-
-            // top out (top has y=0)
-            if (y < mapPixelBounds.min.y + markerHeight/2) {
-                y = mapPixelBounds.min.y + markerHeight/2;
-            // bottom out
-            }
-            else if (y > mapPixelBounds.max.y - markerHeight/2) {
-                y = mapPixelBounds.max.y - markerHeight/2 ;
-            }
-            // right out
-            if (x > mapPixelBounds.max.x- markerWidth / 2) {
-                x = mapPixelBounds.max.x - markerWidth / 2;
-            // left out
-            } else if (x < mapPixelBounds.min.x+ markerWidth / 2) {
-                x = mapPixelBounds.min.x + markerWidth / 2;
-            }
-
-            var  latlng = this._map.containerPointToLatLng([x, y]);
-            if (typeof this._marker === 'undefined') {
-                this._marker = L.marker(latlng, this.options).addTo(this._map);
-                this._marker.on('click', this.onClick, this._marker);
-            }else {
-                this._marker.setLatLng(latlng);
-            }
-
-            this._marker.setRotationAngle(rad / Math.PI * 180);
-
-        } else {
-            if (! (typeof this._marker === 'undefined')) {
-                this._marker.remove();
-                this._marker=undefined;
-            }
+            y = mapPixelBounds.max.y - markerHeight/2;
+            x = center.x -  (y-center.y)/ Math.tan(Math.abs(rad));
+          }
+        }else {
+          if (x < center.x ){
+            x = mapPixelBounds.min.x + markerWidth/2;
+            y = center.y -  (center.x-x ) *Math.tan(rad);
+          }else{
+            x = mapPixelBounds.max.x - markerWidth/2;
+            y = center.y +  (x - center.x) *Math.tan(rad);
+          }
         }
+
+        // top out (top has y=0)
+        if (y < mapPixelBounds.min.y + markerHeight/2) {
+          y = mapPixelBounds.min.y + markerHeight/2;
+          // bottom out
+        }
+        else if (y > mapPixelBounds.max.y - markerHeight/2) {
+          y = mapPixelBounds.max.y - markerHeight/2 ;
+        }
+        // right out
+        if (x > mapPixelBounds.max.x- markerWidth / 2) {
+          x = mapPixelBounds.max.x - markerWidth / 2;
+          // left out
+        } else if (x < mapPixelBounds.min.x+ markerWidth / 2) {
+          x = mapPixelBounds.min.x + markerWidth / 2;
+        }
+
+        var  latlng = this._map.containerPointToLatLng([x, y]);
+        if (typeof this._marker === 'undefined') {
+          this._marker = L.marker(latlng, this.options).addTo(this._map);
+          this._marker.on('click', this.onClick, this._marker);
+        }else {
+          this._marker.setLatLng(latlng);
+        }
+
+        this._marker.setRotationAngle(rad / Math.PI * 180);
+
+        if (! (typeof this._marker === 'undefined')) {
+          this._marker.remove();
+          this._marker=undefined;
+        }
+      }
     },
 
     setTarget(latlng){
-        this._target=latlng;
-        this._addEdgeMarkers();
+      this._target=latlng;
+      this._addEdgeMarkers();
     },
   });
 
@@ -123,25 +122,25 @@
     return new L.EdgeMarker(latlng, options);
   };
 
-L.Layer.include({
+  L.Layer.include({
 
-    bindEdgeMarker(options){
-        if (!this._edgeMarkerHandlersAdded) {
+    bindEdgeMarker: function (options){
+      if (!this._edgeMarkerHandlersAdded) {
 
-            this._edgeMarker=L.edgeMarker(options);
-            this._edgeMarker._target=(this.getLatLng());
-            this._edgeMarker.addTo(this._map);
-            this.on({
-                remove: this._edgeMarker.remove(),
-                move: function (e){
-                        this._edgeMarker.setTarget(e.latlng);
-                    },
-            });
-            this._edgeMarkerHandlersAdded = true;
-        }
-    return this;
+        this._edgeMarker=L.edgeMarker(options);
+        this._edgeMarker._target=(this.getLatLng());
+        this._edgeMarker.addTo(this._map);
+        this.on({
+          remove: this._edgeMarker.remove(),
+          move: function (e){
+            this._edgeMarker.setTarget(e.latlng);
+          },
+        });
+        this._edgeMarkerHandlersAdded = true;
+      }
+      return this;
     },
-});
+  });
 
 })(L);
 
