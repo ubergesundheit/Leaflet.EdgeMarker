@@ -20,16 +20,16 @@
     addTo: function (map) {
       this._map = map;
 
-      map.on('move', this._addEdgeMarkers, this);
-      map.on('viewreset', this._addEdgeMarkers, this);
+      map.on('move', this.update, this);
+      map.on('viewreset', this.update, this);
 
-      this._addEdgeMarkers();
+      this.update();
       return this;
     },
 
     remove: function(){
-      this._map.off('move', this._addEdgeMarkers, this);
-      this._map.off('viewreset', this._addEdgeMarkers, this);
+      this._map.off('move', this.update, this);
+      this._map.off('viewreset', this.update, this);
       this._removeMarker();
       L.Layer.prototype.remove.call(this);
 
@@ -41,7 +41,7 @@
 
     _marker: undefined,
 
-    _addEdgeMarkers: function () {
+    update: function () {
 
       var mapPixelBounds = L.bounds([0,0],this._map.getSize());
       if ( this._target  != undefined){
@@ -130,7 +130,7 @@
 
     setTarget: function (latlng){
       this._target=latlng;
-      this._addEdgeMarkers();
+      this.update();
     },
     _makeThisTarget: function (object){this.setTarget(object.latlng);},
   });
