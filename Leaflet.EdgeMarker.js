@@ -11,6 +11,9 @@
       distanceOpacityFactor: 4,
       layerGroup: null,
       rotateIcons: true,
+      findEdge : function (map){
+        return L.bounds([0,0], map.getSize());
+      },
       icon: L.icon({
         iconUrl: L.Icon.Default.imagePath + '/edge-arrow-marker.png',
         clickable: true,
@@ -86,7 +89,7 @@
         features = this._map._getFeatures();
       }
 
-      var mapPixelBounds = this._map.getSize();
+      var mapPixelBounds = this.options.findEdge(this._map);
 
       var markerWidth = this.options.icon.options.iconSize[0];
       var markerHeight = this.options.icon.options.iconSize[1];
@@ -96,11 +99,10 @@
           features[i].getLatLng()
         );
 
-        if (
-          currentMarkerPosition.y < 0 ||
-          currentMarkerPosition.y > mapPixelBounds.y ||
-          currentMarkerPosition.x > mapPixelBounds.x ||
-          currentMarkerPosition.x < 0
+        if (currentMarkerPosition.y < mapPixelBounds.min.y ||
+          currentMarkerPosition.y > mapPixelBounds.max.y ||
+          currentMarkerPosition.x > mapPixelBounds.max.x ||
+          currentMarkerPosition.x < mapPixelBounds.min.x
         ) {
           // get pos of marker
           var x = currentMarkerPosition.x;
@@ -112,11 +114,10 @@
           // we know angel and its x or y cordiante
           // (depending if we want to place it against top/bottom edge or left right edge)
           // fromthat we can calculate the other cordinate
-
-          var center = L.point(mapPixelBounds.x/2,mapPixelBounds.y/2);
+          var center = mapPixelBounds.getCenter();
 
           var rad = Math.atan2(center.y - y, center.x - x);
-          var rad2TopLeftcorner = Math.atan2(center.y,center.x);
+          var rad2TopLeftcorner = Math.atan2(center.y-mapPixelBounds.min.y,center.x-mapPixelBounds.min.x);
 
           // target is in between diagonals window/ hourglass
           // more out in y then in x
@@ -124,25 +125,25 @@
 
             // bottom out
             if (y < center.y ){
-              y = markerHeight/2;
+              y = mapPixelBounds.min.y + markerHeight/2;
               x = center.x -  (center.y-y) / Math.tan(Math.abs(rad));
               markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
             // top out
             }else{
-              y = mapPixelBounds.y - markerHeight/2;
-              x = center.x -  (y-center.y)/ Math.tan(Math.abs(rad));
+              y = mapPixelBounds.max.y - markerHeight/2;
+              x = center.x - (y-center.y)/ Math.tan(Math.abs(rad));
               markerDistance = -currentMarkerPosition.y;
             }
           }else {
 
             // left out
             if (x < center.x ){
-              x = markerWidth/2;
+              x = mapPixelBounds.min.x + markerWidth/2;
               y = center.y -  (center.x-x ) *Math.tan(rad);
               markerDistance = -currentMarkerPosition.x;
             // right out
             }else{
-              x = mapPixelBounds.x - markerWidth/2;
+              x = mapPixelBounds.max.x - markerWidth/2;
               y = center.y +  (x - center.x) *Math.tan(rad);
               markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
             }
@@ -150,19 +151,19 @@
           // correction so that is always has same distance to edge
 
           // top out (top has y=0)
-          if (y <  markerHeight/2) {
-            y = markerHeight/2;
+          if (y < mapPixelBounds.min.y + markerHeight/2) {
+            y = mapPixelBounds.min.y + markerHeight/2;
             // bottom out
           }
-          else if (y > mapPixelBounds.y - markerHeight/2) {
-            y = mapPixelBounds.y - markerHeight/2 ;
+          else if (y > mapPixelBounds.max.y - markerHeight/2) {
+            y = mapPixelBounds.max.y - markerHeight/2 ;
           }
           // right out
-          if (x > mapPixelBounds.x- markerWidth / 2) {
-            x = mapPixelBounds.x - markerWidth / 2;
+          if (x > mapPixelBounds.max.x - markerWidth / 2) {
+            x = mapPixelBounds.max.x - markerWidth / 2;
             // left out
           } else if (x < markerWidth / 2) {
-            x = markerWidth / 2;
+            x = mapPixelBounds.min.x + markerWidth / 2;
           }
 
           // change opacity on distance
