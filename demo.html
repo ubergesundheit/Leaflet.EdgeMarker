@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet.EdgeMarker Plugin Demo Page</title>
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
+  <link href='//fonts.googleapis.com/css?family=Open+Sans&amp;Ubuntu&amp;Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <style type="text/css">
+    html,body{
+      font-family: 'Open Sans', sans-serif;
+      background-color: dimgray;
+      margin: auto auto auto auto;
+      text-align: center;
+      color: lightgray;
+    }
+    h1,h2{
+      font-family: 'Ubuntu', sans-serif;
+    }
+    .maintainer{
+      font-family: 'Open Sans', sans-serif;
+      color: azure2;
+      font-size: 10pt;
+    }
+    body{
+      width: 780px;
+      display:block;
+      padding: 1em;
+    }
+    #map{
+      width: 780px; height: 400px;
+      display: block;
+    }
+    a{
+      text-decoration: none;
+      color: lightgray;
+    }
+    pre{
+      text-align: left;
+    }
+  </style>
+
+</head>
+<body>
+  <h1>Leaflet EdgeMarker Plugin</h1>
+  <h3>Leaflet 1.0 Demo</h3>
+  <p><b>Leaflet EdgeMarker</b> is a <a target="_blank" href="http://leafletjs.com/">Leaflet</a> plugin which allows you to indicate Markers, Circles and CircleMarkers that are outside of the current view by displaying CircleMarkers at the edges of the map.</p>
+  <p><a href="index-1.0.html"><b>Works in Leaflet 0.7.x and 1.0</b> (Demo)</a></p>
+  <a href="https://github.com/ubergesundheit/Leaflet.EdgeMarker"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub"></a>
+  <div id="map"></div>
+
+  <h2>Usage</h2>
+<pre>
+  <code class="hljs javascript">
+    // create a map
+    var map = L.map('map').setView([51.2,10.43], 6);
+
+    // add an OpenStreetMap tile layer
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // add your Markers, Circles and CircleMarkers
+    L.circle([51.96309632078721, 7.622795104980469], 5000).addTo(map);
+    L.circle([51.650378463223326, 9.440699815750122], 200).addTo(map);
+    L.circleMarker([52.3688917060255, 9.722900390625]).addTo(map);
+    L.circleMarker([51.508742458803326, 9.942626953125]).addTo(map);
+    L.marker([48.85,2.35]).addTo(map);
+    L.marker([52.52,13.40]).addTo(map);
+
+    // add the EdgeMarker to the map.
+    L.edgeMarker({
+      icon: L.icon({ // style markers
+          iconUrl: 'images/edge-arrow-marker-black.png',
+          clickable: true,
+          iconSize: [48, 48],
+          iconAnchor: [24, 24]
+      },
+      rotateIcons: true, // rotate EdgeMarkers depending on their relative position
+      layerGroup: null // you can specify a certain L.layerGroup to create the edge markers from.
+    }).addTo(map);
+
+    // if you want to remove the edge markers
+    // edgeMarkerLayer.destroy();
+  </code>
+</pre>
+
+<p class="maintainer">maintained by <a class="maintainer" href="https://github.com/ubergesundheit" target="_blank">ubergesundheit</a></p>
+
+  <script src="//cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
+  <script src="Leaflet.EdgeMarker.js"></script>
+  <script src="https://cdn.rawgit.com/bbecquet/Leaflet.RotatedMarker/6d902f17/leaflet.rotatedMarker.js"></script>
+  <script>
+    // create a map
+    var map = L.map('map').setView([51.2,10.43], 6);
+
+    // add an OpenStreetMap tile layer
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // add your Markers, Circles and CircleMarkers
+    L.circle([51.96309632078721, 7.622795104980469], 5000).addTo(map);
+    L.circle([51.650378463223326, 9.440699815750122], 200).addTo(map);
+    L.circleMarker([52.3688917060255, 9.722900390625]).addTo(map);
+    L.circleMarker([51.508742458803326, 9.942626953125]).addTo(map);
+    L.marker([48.85,2.35]).addTo(map);
+    L.marker([52.52,13.40]).addTo(map);
+    L.marker([40.18,44.51]).addTo(map);
+    L.marker([48.21,16.37]).addTo(map);
+    L.marker([53.9,27.57]).addTo(map);
+    L.marker([50.85,4.35]).addTo(map);
+    L.marker([43.85,18.38]).addTo(map);
+    L.marker([42.7,23.32]).addTo(map);
+    L.marker([50.09,14.42]).addTo(map);
+    L.marker([55.68,12.57]).addTo(map);
+    L.marker([59.44,24.75]).addTo(map);
+    L.marker([60.18,24.93]).addTo(map);
+    L.marker([37.98,23.73]).addTo(map);
+    L.marker([64.17,-51.74]).addTo(map);
+    L.marker([47.5,19.08]).addTo(map);
+    L.marker([64.15,-21.95]).addTo(map);
+    L.marker([41.9,12.48]).addTo(map);
+    L.marker([56.95,24.1]).addTo(map);
+    L.marker([47.14,9.52]).addTo(map);
+    L.marker([54.68,25.32]).addTo(map);
+    L.marker([49.61,6.13]).addTo(map);
+    L.marker([42,21.43]).addTo(map);
+    L.marker([35.9,14.51]).addTo(map);
+    L.marker([52.37,4.9]).addTo(map);
+    L.marker([59.91,10.74]).addTo(map);
+    L.marker([52.25,21]).addTo(map);
+    L.marker([38.72,-9.13]).addTo(map);
+    L.marker([40.42,-3.7]).addTo(map);
+    L.marker([59.33,18.06]).addTo(map);
+    L.marker([46.95,7.45]).addTo(map);
+    L.marker([50.43,30.52]).addTo(map);
+
+    // add the EdgeMarker to the map.
+    var edgeMarkerLayer = L.edgeMarker({
+      icon: L.icon({ // style markers
+          iconUrl : 'images/edge-arrow-marker.png',
+          clickable: true,
+          iconSize: [48,48],
+          iconAnchor: [24, 24]
+      })
+    }).addTo(map);
+
+    // if you want to remove the edge markers
+    // edgeMarkerLayer.destroy();
+  </script>
+
+</body>
+</html>
