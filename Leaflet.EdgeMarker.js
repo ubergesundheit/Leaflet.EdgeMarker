@@ -147,6 +147,24 @@
               markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
             }
           }
+          // correction so that is always has same distance to edge
+
+          // top out (top has y=0)
+          if (y <  markerHeight/2) {
+            y = markerHeight/2;
+            // bottom out
+          }
+          else if (y > mapPixelBounds.y - markerHeight/2) {
+            y = mapPixelBounds.y - markerHeight/2 ;
+          }
+          // right out
+          if (x > mapPixelBounds.x- markerWidth / 2) {
+            x = mapPixelBounds.x - markerWidth / 2;
+            // left out
+          } else if (x < markerWidth / 2) {
+            x = markerWidth / 2;
+          }
+
           // change opacity on distance
           var newOptions = this.options;
           if (this.options.distanceOpacity) {
