@@ -9,7 +9,6 @@
     options: {
       distanceOpacity: false,
       distanceOpacityFactor: 4,
-      layerGroup: null,
       rotateIcons: true,
       icon: L.icon({
         iconUrl: L.Icon.Default.imagePath + '/edge-arrow-marker.png',
