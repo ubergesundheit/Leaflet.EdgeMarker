@@ -143,8 +143,9 @@
   L[classToExtend].include({
 
     bindEdgeMarker: function (options){
+
+      this._edgeMarker = L.edgeMarker(this.getLatLng(),options);
       if (!this._edgeMarkerHandlersAdded) {
-        this._edgeMarker = L.edgeMarker(this.getLatLng(),options);
         this._edgeMarker.addTo(this._map);
         this.on('remove', this._edgeMarker.destroy, this._edgeMarker); // does not fire on leaflet 0.7
         this.on('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
