@@ -10,6 +10,9 @@
       distanceOpacity: false,
       distanceOpacityFactor: 4,
       rotateIcons: true,
+      findEdge : function (map){
+        return L.bounds([0,0], map.getSize());
+      },
       icon: L.icon({
         iconUrl: L.Icon.Default.imagePath + '/edge-arrow-marker.png',
         clickable: true,
@@ -30,6 +33,8 @@
       map.on('viewreset', this._addEdgeMarkers, this);
 
       this._addEdgeMarkers();
+
+      map.addLayer(this);
 
       return this;
     },
@@ -65,18 +70,17 @@
     _addEdgeMarkers: function() {
       this._removeMarker();
       if ( this._target  != undefined){
-        var mapPixelBounds = this._map.getSize();
+        var mapPixelBounds = this.options.findEdge(this._map);
 
         var markerWidth = this.options.icon.options.iconSize[0];
         var markerHeight = this.options.icon.options.iconSize[1];
 
         var currentMarkerPosition = this._map.latLngToContainerPoint( this._target);
 
-        if (
-          currentMarkerPosition.y < 0 ||
-          currentMarkerPosition.y > mapPixelBounds.y ||
-          currentMarkerPosition.x > mapPixelBounds.x ||
-          currentMarkerPosition.x < 0
+        if (currentMarkerPosition.y < mapPixelBounds.min.y ||
+          currentMarkerPosition.y > mapPixelBounds.max.y ||
+          currentMarkerPosition.x > mapPixelBounds.max.x ||
+          currentMarkerPosition.x < mapPixelBounds.min.x
         ) {
           // get pos of marker
           var x = currentMarkerPosition.x;
@@ -84,22 +88,22 @@
           var markerDistance;
 
           // top out
-          if (currentMarkerPosition.y < 0) {
-            y = 0 + markerHeight / 2;
+          if (currentMarkerPosition.y < mapPixelBounds.min.y) {
+            y = mapPixelBounds.min.y + markerHeight / 2;
             markerDistance = -currentMarkerPosition.y;
             // bottom out
-          } else if (currentMarkerPosition.y > mapPixelBounds.y) {
-            y = mapPixelBounds.y - markerHeight / 2;
-            markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
+          } else if (currentMarkerPosition.y > mapPixelBounds.max.y) {
+            y = mapPixelBounds.max.y - markerHeight / 2;
+            markerDistance = currentMarkerPosition.y - mapPixelBounds.max.y;
           }
 
           // right out
-          if (currentMarkerPosition.x > mapPixelBounds.x) {
-            x = mapPixelBounds.x - markerWidth / 2;
-            markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
+          if (currentMarkerPosition.x > mapPixelBounds.max.x) {
+            x = mapPixelBounds.max.x - markerWidth / 2;
+            markerDistance = currentMarkerPosition.x - mapPixelBounds.max.x;
             // left out
-          } else if (currentMarkerPosition.x < 0) {
-            x = 0 + markerWidth / 2;
+          } else if (currentMarkerPosition.x < mapPixelBounds.min.x) {
+            x = mapPixelBounds.min.x + markerWidth / 2;
             markerDistance = -currentMarkerPosition.x;
           }
 
@@ -112,9 +116,8 @@
 
           // rotate markers
           if (this.options.rotateIcons) {
-            var centerX = mapPixelBounds.x / 2;
-            var centerY = mapPixelBounds.y / 2;
-            var angle = Math.atan2(centerY - y, centerX - x) / Math.PI * 180;
+            var center = mapPixelBounds.getCenter();
+            var angle = Math.atan2(center.y - y, center.x - x) / Math.PI * 180;
             newOptions.angle = angle;
           }
 
