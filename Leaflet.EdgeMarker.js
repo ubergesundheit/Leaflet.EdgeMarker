@@ -109,24 +109,61 @@
           var y = currentMarkerPosition.y;
           var markerDistance;
 
-          // top out
-          if (currentMarkerPosition.y < mapPixelBounds.min.y) {
-            y = mapPixelBounds.min.y + markerHeight / 2;
-            markerDistance = -currentMarkerPosition.y;
-            // bottom out
-          } else if (currentMarkerPosition.y > mapPixelBounds.max.y) {
-            y = mapPixelBounds.max.y - markerHeight / 2;
-            markerDistance = currentMarkerPosition.y - mapPixelBounds.max.y;
-          }
+          // we want to place EdgeMarker on the line from center screen to target,
+          // and against the border of the screen
+          // we know angel and its x or y cordiante
+          // (depending if we want to place it against top/bottom edge or left right edge)
+          // fromthat we can calculate the other cordinate
+          var center = mapPixelBounds.getCenter();
 
-          // right out
-          if (currentMarkerPosition.x > mapPixelBounds.max.x) {
-            x = mapPixelBounds.max.x - markerWidth / 2;
-            markerDistance = currentMarkerPosition.x - mapPixelBounds.max.x;
+          var rad = Math.atan2(center.y - y, center.x - x);
+          var rad2TopLeftcorner = Math.atan2(center.y-mapPixelBounds.min.y,center.x-mapPixelBounds.min.x);
+
+          // target is in between diagonals window/ hourglass
+          // more out in y then in x
+          if (Math.abs(rad) > rad2TopLeftcorner && Math.abs (rad) < Math.PI -rad2TopLeftcorner) {
+
+            // bottom out
+            if (y < center.y ){
+              y = mapPixelBounds.min.y + markerHeight/2;
+              x = center.x -  (center.y-y) / Math.tan(Math.abs(rad));
+              markerDistance = currentMarkerPosition.y - mapPixelBounds.y;
+            // top out
+            }else{
+              y = mapPixelBounds.max.y - markerHeight/2;
+              x = center.x - (y-center.y)/ Math.tan(Math.abs(rad));
+              markerDistance = -currentMarkerPosition.y;
+            }
+          }else {
+
             // left out
-          } else if (currentMarkerPosition.x < mapPixelBounds.min.x) {
+            if (x < center.x ){
+              x = mapPixelBounds.min.x + markerWidth/2;
+              y = center.y -  (center.x-x ) *Math.tan(rad);
+              markerDistance = -currentMarkerPosition.x;
+            // right out
+            }else{
+              x = mapPixelBounds.max.x - markerWidth/2;
+              y = center.y +  (x - center.x) *Math.tan(rad);
+              markerDistance = currentMarkerPosition.x - mapPixelBounds.x;
+            }
+          }
+          // correction so that is always has same distance to edge
+
+          // top out (top has y=0)
+          if (y < mapPixelBounds.min.y + markerHeight/2) {
+            y = mapPixelBounds.min.y + markerHeight/2;
+            // bottom out
+          }
+          else if (y > mapPixelBounds.max.y - markerHeight/2) {
+            y = mapPixelBounds.max.y - markerHeight/2 ;
+          }
+          // right out
+          if (x > mapPixelBounds.max.x - markerWidth / 2) {
+            x = mapPixelBounds.max.x - markerWidth / 2;
+            // left out
+          } else if (x < markerWidth / 2) {
             x = mapPixelBounds.min.x + markerWidth / 2;
-            markerDistance = -currentMarkerPosition.x;
           }
 
           // change opacity on distance
@@ -138,8 +175,7 @@
 
           // rotate markers
           if (this.options.rotateIcons) {
-            var center = mapPixelBounds.getCenter();
-            var angle = Math.atan2(center.y - y, center.x - x) / Math.PI * 180;
+            var angle = rad / Math.PI * 180;
             newOptions.angle = angle;
           }
 
