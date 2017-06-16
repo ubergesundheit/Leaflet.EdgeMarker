@@ -42,7 +42,7 @@
     },
 
     onClick: function (e) {
-      this._map.setView(e.latlng, this._map.getZoom());
+      this._map.setView(this._target, this._map.getZoom());
     },
 
     _marker: undefined,
@@ -111,7 +111,7 @@
           var  latlng = this._map.containerPointToLatLng([x, y]);
           if (typeof this._marker === 'undefined') {
             this._marker = L.marker(latlng, this.options).addTo(this._map);
-            this._marker.on('click', this.onClick, this._marker);
+            this._marker.on('click', this.onClick, this);
           }else {
             this._marker.setLatLng(latlng);
           }
