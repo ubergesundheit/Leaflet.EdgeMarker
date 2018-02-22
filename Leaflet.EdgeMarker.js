@@ -9,7 +9,6 @@
     options: {
       distanceOpacity: false,
       distanceOpacityFactor: 4,
-      layerGroup: null,
       rotateIcons: true,
       findEdge : function (map){
         return L.bounds([0,0], map.getSize());
@@ -22,27 +21,13 @@
       })
     },
 
-    initialize: function(options) {
+    initialize: function(target,options) {
+      this._target = target;
       L.setOptions(this, options);
     },
 
     addTo: function(map) {
       this._map = map;
-
-      // add a method to get applicable features
-      if (typeof map._getFeatures !== 'function') {
-        L.extend(map, {
-          _getFeatures: function() {
-            var out = [];
-            for (var l in this._layers) {
-              if (typeof this._layers[l].getLatLng !== 'undefined') {
-                out.push(this._layers[l]);
-              }
-            }
-            return out;
-          }
-        });
-      }
 
       map.on('move', this._addEdgeMarkers, this);
       map.on('viewreset', this._addEdgeMarkers, this);
@@ -55,49 +40,42 @@
     },
 
     destroy: function() {
-      if (this._map && this._borderMarkerLayer) {
+      if (this._map ) {
         this._map.off('move', this._addEdgeMarkers, this);
         this._map.off('viewreset', this._addEdgeMarkers, this);
-
-        this._borderMarkerLayer.clearLayers();
-        this._map.removeLayer(this._borderMarkerLayer);
-
-        delete this._map._getFeatures;
-
-        this._borderMarkerLayer = undefined;
+        this._removeMarker();
+        this._map.removeLayer(this);
       }
     },
 
+    setTarget: function (latlng){
+      this._target=latlng;
+      this._addEdgeMarkers();
+    },
+
+    _makeThisTarget: function (object)
+    {
+      this.setTarget(object.latlng);
+    },
+
     onClick: function(e) {
-      this._map.setView(e.target.options.latlng, this._map.getZoom());
+      this._map.setView(e.latlng, this._map.getZoom());
     },
 
     onAdd: function() {},
 
-    _borderMarkerLayer: undefined,
+    _marker: undefined,
+    _target: undefined,
 
     _addEdgeMarkers: function() {
-      if (typeof this._borderMarkerLayer === 'undefined') {
-        this._borderMarkerLayer = new L.LayerGroup();
-      }
-      this._borderMarkerLayer.clearLayers();
+      this._removeMarker();
+      if ( this._target  != undefined){
+        var mapPixelBounds = this.options.findEdge(this._map);
 
-      var features = [];
-      if (this.options.layerGroup != null) {
-        features = this.options.layerGroup.getLayers();
-      } else {
-        features = this._map._getFeatures();
-      }
+        var markerWidth = this.options.icon.options.iconSize[0];
+        var markerHeight = this.options.icon.options.iconSize[1];
 
-      var mapPixelBounds = this.options.findEdge(this._map);
-
-      var markerWidth = this.options.icon.options.iconSize[0];
-      var markerHeight = this.options.icon.options.iconSize[1];
-
-      for (var i = 0; i < features.length; i++) {
-        var currentMarkerPosition = this._map.latLngToContainerPoint(
-          features[i].getLatLng()
-        );
+        var currentMarkerPosition = this._map.latLngToContainerPoint( this._target);
 
         if (currentMarkerPosition.y < mapPixelBounds.min.y ||
           currentMarkerPosition.y > mapPixelBounds.max.y ||
@@ -179,21 +157,49 @@
             newOptions.angle = angle;
           }
 
-          var ref = { latlng: features[i].getLatLng() };
+          var ref = { latlng: this._targert };
           newOptions = L.extend({}, newOptions, ref);
 
-          var marker = L.rotatedMarker(
-            this._map.containerPointToLatLng([x, y]),
-            newOptions
-          ).addTo(this._borderMarkerLayer);
-
-          marker.on('click', this.onClick, marker);
+          this._marker = L.rotatedMarker(
+              this._map.containerPointToLatLng([x, y]),
+              newOptions
+            ).addTo(this._map);
         }
       }
-      if (!this._map.hasLayer(this._borderMarkerLayer)) {
-        this._borderMarkerLayer.addTo(this._map);
+    },
+
+    _removeMarker: function (){
+      if (! (typeof this._marker === 'undefined')) {
+        this._map.removeLayer(this._marker);
+        this._marker=undefined;
       }
     }
+  });
+
+  L[classToExtend].include({
+
+    bindEdgeMarker: function (options){
+
+      this._edgeMarker = L.edgeMarker(this.getLatLng(),options);
+      if (!this._edgeMarkerHandlersAdded) {
+        this._edgeMarker.addTo(this._map);
+        this.on('remove', this._edgeMarker.destroy, this._edgeMarker); // does not fire on leaflet 0.7
+        this.on('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
+        this._edgeMarkerHandlersAdded = true;
+      }
+      return this;
+    },
+
+    unbindEdgeMarker: function (){
+      if (this._edgeMarker){
+        this.off('remove', this._edgeMarker.remove, this._edgeMarker);// does not have effect on leaflet 0.7
+        this.off('move', this._edgeMarker._makeThisTarget, this._edgeMarker);
+        this._edgeMarker.remove();
+        this._edgeMarker=undefined;
+        this._edgeMarkerHandlersAdded=false;
+      }
+        return this;
+    },
   });
 
   /*
@@ -254,7 +260,7 @@
     return new L.RotatedMarker(pos, options);
   };
 
-  L.edgeMarker = function(options) {
-    return new L.EdgeMarker(options);
+  L.edgeMarker = function(target, options) {
+    return new L.EdgeMarker(target, options);
   };
 })(L);
